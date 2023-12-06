@@ -1,17 +1,17 @@
-function [] = force_cmd2csv(t, cmd)
+function [paths] = force_cmd2csv(t, cmd)
       % file name: {mode}_{method}_{stat.time_delta}_{number_index}
 
       global stat;
       force_csv_path = fullfile(stat.csv_path, "FORCE");
 
       if stat.is_single_axis
-        axis_name = "Single";
+        axis_name = strcat("Single", "_", stat.compress_strategy);
       else
         axis_name = "ThreeAxes";
       end
 
       METHOD_NAME = ["TSM", "APM", "STFTM"];
-      paths = [];
+      paths = cell(length(METHOD_NAME), 1);
 
       for method_num = 1 : length(METHOD_NAME)
 
@@ -57,8 +57,9 @@ function [] = force_cmd2csv(t, cmd)
                 end
 
                  combined_array = [t_T,new_cmd_T];
-
-                 writematrix(combined_array, file_name);
+                 if stat.write_csv_enable
+                    writematrix(combined_array, file_name);
+                 end
             end
             
         else
@@ -100,14 +101,16 @@ function [] = force_cmd2csv(t, cmd)
 
 
             combined_array = [t_T,new_cmd_T];
-
-            writematrix(combined_array, file_name);
+            if stat.write_csv_enable
+                writematrix(combined_array, file_name);
+            end
         end
       disp(["Store `" + string(stat.mode) + " " + ...
           string(METHOD_NAME(method_num)) + " " + ...
           "` csv to:" + newline + file_name]);
-        
+      
+      % TODO: fix, 多個 STFTM 頻段會有問題
       % update paths
-      paths = [path, file_name];
+      paths{method_num} = file_name;
       end
 end

@@ -19,7 +19,6 @@ function [processed_scf_data, processed_dcf_data, D_KL] = data_reader()
     dcf_data = adjust_times(dcf_data, stat.fs);
 
     % 创建新的时间向量
-    
     new_time_vector = scf_data(1, 1):avg_sampling_interval:scf_data(1, end);
 
     % 重新采样
@@ -37,10 +36,14 @@ function [processed_scf_data, processed_dcf_data, D_KL] = data_reader()
         P = processed_scf_data(i, :);
         Q = processed_dcf_data(i, :);
 
-        P(P == 0) = eps; % 替换 0 以避免除以 0
-        Q(Q == 0) = eps;
+        P(P == 0) = eps(0); % 替换 0 以避免除以 0
+        Q(Q == 0) = eps(0);
 
-        D_KL(i, :) = P .* log(P ./ Q);
+        % P 和 Q 要 abs 化?
+        new_P = P;
+        new_Q = Q;
+
+        D_KL(i, :) = abs(new_P .* log10(new_P ./ new_Q));
     end
 
     %% 更新时间分辨率

@@ -7,6 +7,8 @@ function linear_converted_series = data_linear_converter(series)
 
     % TSM, APM, STFTM
     for method = 1 : 3
+
+        % STFTM
         if method == CONST_STFTM
             % k: freq_bands
             for k = 1 : size(series.cmd{method}, 2)

@@ -5,7 +5,7 @@ function [paths] = warn_cmd2csv(t, cmd)
     warn_csv_path = fullfile(stat.csv_path, "WARN");
 
     if stat.is_single_axis
-        axis_name = "Single";
+        axis_name = strcat("Single", "_", stat.compress_strategy);
     else
         axis_name = "ThreeAxes";
     end
@@ -41,10 +41,13 @@ function [paths] = warn_cmd2csv(t, cmd)
 
     t_T = t';
     combined_array = [t_T,new_cmd_T];
+    if stat.write_csv_enable
+        writematrix(combined_array, file_name);
+    end
 
-    writematrix(combined_array, file_name);
+
     disp(["Store `" + string(stat.mode) + "` csv to:" + newline + file_name]);
     
     % return paths
-    paths = [file_name];
+    paths = {file_name};
 end

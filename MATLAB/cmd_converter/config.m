@@ -8,23 +8,36 @@ function stat = config()
     MODE = "FORCE_LINEAR";
     
     % time delta in second
-    TIME_DELTA_SEC = 0.15;
+    TIME_DELTA_SEC = 0.15; % TODO: 2 會發生問題
     
     % compress strategy, only be used when FUSE_DATA_TO_SINGLE_AXIS set to
     % `true`. For more details, see
     % `helper/compress/compress_to_single_axis.m`.
-    COMPRESS_STRATEGY = "ABS_MAX";
+    % "ENERGY" / "ABS_MAX"
+    COMPRESS_STRATEGY = "ENERGY";
     
     % freq_band, only used in STFTM
     % could be something like [[1, 200]; [500, 2000]] (Hz)
-    FREQ_BANDS = [[1,5];[]];
+    % most test: FREQ_BANDS = [[1,5];[]];
+    
+    % TEST CASE [[3.0, 6.0]], with time_delta 0.45
+    % TEST CASE [[0.0, 0.3]], with time_delta 0.15
+
+    FREQ_BANDS = [[0.0, 0.3]]; % 20 sec apart for DCF
+    %FREQ_BANDS = [[3.0, 6.0]]; % 20 sec apart for DCF
+
+    PLOT_WATERFALL = true;
 
     % STFT related
     % STFT overlap percent
+    % aborted
     OVERLAP_PERCENT = 50;
 
-    % leakage
+    % leakage (aborted)
     LEAKAGE = 0.7;
+
+    % Write_CSV (open this if you want to generate new csv files)
+    WRITE_CSV_ENABLE = true;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Data related parameters
 
@@ -47,7 +60,7 @@ function stat = config()
     % 1. is_single_axis         Boolean
     % 2. mode                   String("WARN_BIN" / "WARN_LEVEL" / "FORCE_LINEAR")                       
     % 3. time_delta             Float
-    % 4. compress_strategy      String("ABS_MAX")
+    % 4. compress_strategy      String("ABS_MAX"), String("ENERGY")
     % 5. file_path              String
     %     - scf
     %     - dcf
@@ -82,4 +95,6 @@ function stat = config()
     stat.leakage = LEAKAGE;
     stat.overlap_percent = OVERLAP_PERCENT;
     stat.csv_path = CSV_PATH;
+    stat.write_csv_enable = WRITE_CSV_ENABLE;
+    stat.plot_waterfall = PLOT_WATERFALL;
 end

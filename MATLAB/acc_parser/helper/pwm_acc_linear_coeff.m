@@ -48,7 +48,7 @@ function [coeff] = pwm_acc_linear_coeff(pwm, acc)
             in_acc_avg{axis}(i) = (avg_pos + abs(avg_neg) - acc_bias);
 
             % 獲取對應的 PWM 數據
-            in_pwm{axis}(i) = pwm(i, 2 + (axis - 1) * 2);
+            in_pwm{axis}(i) = pwm(i, axis * 2);
         end
     end
 

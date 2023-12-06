@@ -14,9 +14,13 @@ function [target] = compress_to_single_axis(raw, strategy)
         compressed_data = zeros(1, size(abs_data, 2));
 
         % Iterate over each column to select the maximum absolute value
-        for col = 1:size(abs_data, 2)
+        for col = 1 : size(abs_data, 2)
             compressed_data(col) = abs_data(max_index(col), col);
         end
+
+    elseif strcmp(strategy, "ENERGY")
+        % compress along row axis
+        compressed_data = sqrt(sum(data.^2, 1));
     end
 
     target = [t; compressed_data]; % Concatenate time axis with compressed data

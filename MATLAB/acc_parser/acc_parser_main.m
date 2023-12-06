@@ -1,10 +1,11 @@
-% pwm 的母資料夾名稱是否包含Single 決定 axis_num
+%% pwm 的母資料夾名稱是否包含Single 決定 axis_num
 config();
 
 global acc_stat;
 
 % add hepler
-addpath("helper\");
+addpath(genpath("helper"));
+addpath(genpath("../util"));
 
 % base on ../../Data/Acc
 base_path = "../../Data/Acc";
@@ -51,7 +52,7 @@ dcf_csv = readmatrix(fullfile(path,file));
 % analysis linear 
 coeff_result = pwm_acc_linear_coeff(pwm_txt, acc_txt);
 
-fprintf("PWM - ACC 相關係數結果是\n: ");
+fprintf("PWM - ACC corr result:\n ");
 for k = 1 : length(coeff_result)
-    fprintf("第 %d 軸: %.4f\n", k, coeff_result(k));
+    fprintf(" %d axis: %.4f\n", k, coeff_result(k));
 end

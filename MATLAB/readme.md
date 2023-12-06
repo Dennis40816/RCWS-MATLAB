@@ -2,10 +2,14 @@
 
 ## User Manual
 
+What you can modify or execute are
+
 - cmd_converter
-    - 正常執行: 執行 main.m 產生 csv 檔案
-    - 設定: 修改 config.m
-    - 印出不同方法間的 cmd: 執行 three_methods_cmd_plotter.m
+  
+  - main.m: generate cmd csv + call three_methods_cmd_plotter
+  - config.m: user config
+  - helper/three_methods_cmd_plotter: plot three methods' cmd-raw force diagram + calculate linear correlation between cmd and raw force data
 
 - acc_parser
-    - 印出 cmd vs acc: acc_parser_main.m
+
+  - acc_parser_main.m: plot pwm cmd-acc diagram and calculate linear corr

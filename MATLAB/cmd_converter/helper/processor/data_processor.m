@@ -24,6 +24,7 @@ function [t_sampled, cmd] = data_processor(raw)
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % Use warn binary cmd (Vibrate or not) => 999 or 500
+    % TODO: let the const be declared in const_struct.
     if strcmp(stat.mode, "WARN_BIN")
         D_KL_THRESHOLD = 1;
         VIBRATE_CMD = 999;
@@ -42,7 +43,8 @@ function [t_sampled, cmd] = data_processor(raw)
             end
     
             for j = 1:axis_num
-                segment_max = max(target(j + 1, segment_start:segment_end));
+                abs_target = abs(target(j + 1, segment_start:segment_end));
+                segment_max = max(abs_target);
                 if segment_max >= D_KL_THRESHOLD
                     cmd(j, i) = VIBRATE_CMD;
                 else
@@ -79,7 +81,9 @@ function [t_sampled, cmd] = data_processor(raw)
             end
     
             for j = 1:axis_num
-                segment_max = max(target(j + 1, segment_start:segment_end));
+                abs_target = abs(target(j + 1, segment_start:segment_end));
+                segment_max = max(abs_target);
+                
                 % 分配 Strong vibration
                 if segment_max >= THRESHOLD.STRONG
                     cmd(j, i) = STRONG_VIBRATE_CMD;
@@ -125,6 +129,8 @@ function [t_sampled, cmd] = data_processor(raw)
 
         % EXIT >>> 3
         return;
+    else
+        error('Mode error: %s \n', stat.mode);
     end
 end
 % Brief: Process data

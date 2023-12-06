@@ -180,10 +180,40 @@ function [stftm_sampled_target, stft_info, other_info] = sampled_by_stft(target,
 
     % STFT all signals
     for j = 1 : num_axis
-        [s,f,t] = pspectrum(target(j + 1, :), stat.fs, "spectrogram", ...
-                            TimeResolution=stat.time_delta, ...
-                            OverlapPercent=stat.overlap_percent, ...
-                            Leakage=stat.leakage);
+        %% Alter1
+        % [s,f,t] = pspectrum(target(j + 1, :), stat.fs, "spectrogram", ...
+        %                     TimeResolution=stat.time_delta);
+        %                     % OverlapPercent=stat.overlap_percent, ...
+        %                     % Leakage=stat.leakage);
+        % % plot
+        % if stat.plot_waterfall
+        %     figure;
+        %     waterfall(t, f, s);
+        % end
+        
+        windowSize = round(stat.fs * stat.time_delta);
+        overlap = round(windowSize * stat.overlap_percent / 100);
+        nfft = windowSize;
+
+        [s,f,t] = stft(target(j + 1, :), stat.fs, ...
+                       "Window", hamming(windowSize), ...
+                       'OverlapLength', overlap, ...
+                       'FFTLength', nfft);
+        
+        % correct data
+        positiveFrequenciesIndex = find(f >= 0);
+        f = f(positiveFrequenciesIndex);
+        plot_s = s(positiveFrequenciesIndex, :).^2;
+        s = abs(s(positiveFrequenciesIndex, :)).^2; 
+        
+        % plot
+        if stat.plot_waterfall
+            figure;
+            % make s to log scale
+            sDB = 20 * log10(abs(plot_s) + eps);
+            surf(t, f, abs(plot_s));
+        end
+
         % resample the along time axis
         new_t = 0:stat.time_delta:max(t);
         new_s = zeros(size(s, 1), length(new_t));
@@ -192,7 +222,6 @@ function [stftm_sampled_target, stft_info, other_info] = sampled_by_stft(target,
         for i = 1:size(s, 1)
             new_s(i, :) = interp1(t, s(i, :), new_t, 'linear', 'extrap');
         end
-
 
         info.s = new_s'; % [row: t; col: f]
         info.f = f';
@@ -207,7 +236,6 @@ function [stftm_sampled_target, stft_info, other_info] = sampled_by_stft(target,
     % energy {j}{k}(:) array length should be same as size(apm_sampled_target, 2)
     num_bands = size(stat.freq_bands, 1);
     total_energy = cell(1, num_axis);
-    energy = cell(num_axis, num_bands);
 
     for j = 1:num_axis
         % 获取当前轴向的频谱数据和新的时间向量
@@ -237,11 +265,11 @@ function [stftm_sampled_target, stft_info, other_info] = sampled_by_stft(target,
             % TODO: store ratio to stat
             ratio{j} = energy{j}{k} ./ total_energy{j};
             result{j} = (ratio{j}) .* apm_sampled_target(j, :)';
+            other_info.ratio{j}{k} = ratio;
         end
         stftm_sampled_target{k} = cell2mat(result)';
     end
 
     other_info.total_energy = total_energy;
     other_info.energy = energy;
-    other_info.ratio = ratio;
 end
